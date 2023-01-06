@@ -1,5 +1,7 @@
 *.out
 *.test
 go.work
+*.exe
 
 .idea/
+resources/
