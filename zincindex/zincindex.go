@@ -53,7 +53,17 @@ func (a *Authentication) indexFolder(path string) {
 			return nil
 		}
 
-		return a.indexFile(path)
+		mail, err := a.indexFile(path)
+		if err != nil {
+			return err
+		}
+
+		err = a.ingestSingle(mail)
+		if err != nil {
+			return err
+		}
+
+		return nil
 	})
 
 	if err != nil {
@@ -61,11 +71,13 @@ func (a *Authentication) indexFolder(path string) {
 	}
 }
 
-// indexFile indexes a single file then sends it to zinc to ingest it
-func (a *Authentication) indexFile(path string) error {
+// indexFile indexes a single file
+func (a *Authentication) indexFile(path string) (Mail, error) {
+	mail := Mail{}
+
 	file, err := os.Open(path)
 	if err != nil {
-		return err
+		return mail, err
 	}
 
 	// Defer closing the file
@@ -76,13 +88,9 @@ func (a *Authentication) indexFile(path string) error {
 		}
 	}(file)
 
-	mail := ParseMailFromFile(file)
-	err = a.ingestSingle(mail)
-	if err != nil {
-		return err
-	}
+	mail = ParseMailFromFile(file)
 
-	return nil
+	return mail, nil
 }
 
 // ingestSingle takes a mail and sends it to be ingested
