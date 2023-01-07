@@ -33,7 +33,7 @@ func Authenticate(address string, username string, password string) *Authenticat
 // IndexDB indexes the enron database at the given path and ingests it into ZincSearch.
 // path is expected to point at a directory containing `maildir/`.
 func (a *Authentication) IndexDB(path string) {
-	mails := a.indexFolder(path)
+	mails := indexFolder(path)
 
 	for _, mail := range mails {
 		err := a.ingestSingle(mail)
@@ -50,7 +50,7 @@ func (a *Authentication) ClearDB() {
 }
 
 // indexFolder takes a path to the enron database and indexes all of its directories and files recursively.
-func (a *Authentication) indexFolder(path string) []Mail {
+func indexFolder(path string) []Mail {
 	var mails []Mail
 
 	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
@@ -63,7 +63,7 @@ func (a *Authentication) indexFolder(path string) []Mail {
 			return nil
 		}
 
-		mail, err := a.indexFile(path)
+		mail, err := indexFile(path)
 		if err != nil {
 			return err
 		}
@@ -81,7 +81,7 @@ func (a *Authentication) indexFolder(path string) []Mail {
 }
 
 // indexFile indexes a single file
-func (a *Authentication) indexFile(path string) (Mail, error) {
+func indexFile(path string) (Mail, error) {
 	mail := Mail{}
 
 	file, err := os.Open(path)
