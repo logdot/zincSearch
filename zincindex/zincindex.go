@@ -15,14 +15,16 @@ import (
 // Authentication represents a set of credentials for the ZincSearch API.
 type Authentication struct {
 	address  string
+	index    string
 	username string
 	password string
 }
 
 // Authenticate creates an authentication object from an address, username and password.
-func Authenticate(address string, username string, password string) *Authentication {
+func Authenticate(address string, index string, username string, password string) *Authentication {
 	authentication := &Authentication{
 		address:  address,
+		index:    index,
 		username: username,
 		password: password,
 	}
@@ -109,7 +111,8 @@ func (a *Authentication) ingestSingle(mail Mail) error {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", a.address, bytes.NewReader(data))
+	requestAddr := a.address + "api/" + a.index + "_doc"
+	req, err := http.NewRequest("POST", requestAddr, bytes.NewReader(data))
 	if err != nil {
 		log.Println(err)
 		return err
