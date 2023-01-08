@@ -35,15 +35,23 @@ func Authenticate(address string, index string, username string, password string
 // IndexDB indexes the enron database at the given path and ingests it into ZincSearch.
 // path is expected to point at a directory containing `maildir/`.
 func (a *Authentication) IndexDB(path string) {
+	log.Println("Starting indexing")
+
 	mails := indexFolder(path)
 
-	for _, mail := range mails {
-		err := a.ingestSingle(mail)
+	err := a.ingestBulk(mails, 10000)
 
-		if err != nil {
-			log.Println(err)
-		}
+	if err != nil {
+		log.Println(err)
 	}
+
+	//for _, mail := range mails {
+	//	err := a.ingestSingle(mail)
+	//
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
+	//}
 }
 
 // ClearDB deletes all records from ZincSearch.
@@ -111,8 +119,62 @@ func (a *Authentication) ingestSingle(mail Mail) error {
 		return err
 	}
 
-	requestAddr := a.address + "api/" + a.index + "_doc"
-	req, err := http.NewRequest("POST", requestAddr, bytes.NewReader(data))
+	requestAddr := a.address + "api/" + a.index + "/_doc"
+	return a.sendRequest(requestAddr, data)
+}
+
+func (a *Authentication) ingestBulk(mails []Mail, chunking int) error {
+	index := struct {
+		InnerIndex struct {
+			Index string `json:"_index"`
+		} `json:"index"`
+	}{
+		InnerIndex: struct {
+			Index string `json:"_index"`
+		}{
+			Index: a.index,
+		},
+	}
+
+	indexData, err := json.Marshal(index)
+	if err != nil {
+		return err
+	}
+	// ZincSearch expects a newline delimited json file
+	indexData = append(indexData, '\n')
+
+	requestBody := []byte("")
+	for i, mail := range mails {
+		// For some reason if we want to index data we need to specify the index for every single item, instead of only
+		// once at the beginning of the request.
+		requestBody = append(requestBody, indexData...)
+
+		data, err := json.Marshal(mail)
+		if err != nil {
+			return err
+		}
+
+		// ZincSearch expects a newline delimited json file
+		data = append(data, '\n')
+
+		requestBody = append(requestBody, data...)
+
+		if i%chunking == 0 {
+			requestAddr := a.address + "api/_bulk"
+			err = a.sendRequest(requestAddr, requestBody)
+			if err != nil {
+				return err
+			}
+			requestBody = []byte("")
+		}
+	}
+
+	requestAddr := a.address + "api/_bulk"
+	return a.sendRequest(requestAddr, requestBody)
+}
+
+func (a *Authentication) sendRequest(url string, body []byte) error {
+	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		log.Println(err)
 		return err
@@ -130,13 +192,12 @@ func (a *Authentication) ingestSingle(mail Mail) error {
 	defer resp.Body.Close()
 
 	log.Println(resp.StatusCode)
-	body, err := io.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
 	log.Println(string(body))
-
 	return nil
 }
