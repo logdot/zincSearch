@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"zincSearchProject/zincindex"
 
@@ -12,6 +13,8 @@ import (
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
+	r.Mount("/debug", middleware.Profiler())
 
 	r.Get("/", index)
 	r.Get("/IndexDB", indexDB)
