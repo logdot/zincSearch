@@ -40,9 +40,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/logdot/zincSearch"
 	"net/http"
 	_ "net/http/pprof"
-	"zincSearchProject/internal/zincindex"
 )
 
 func main() {
@@ -73,5 +73,5 @@ func main() {
 		go http.ListenAndServe(*profilerAddr, nil)
 	}
 
-	zincindex.Authenticate(*address, *index, *username, *password).IndexDB(dbPath)
+	zincSearch.Authenticate(*address, *index, *username, *password).IndexDB(dbPath)
 }
