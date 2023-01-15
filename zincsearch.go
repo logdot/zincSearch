@@ -62,7 +62,7 @@ func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from 
 
 	url := a.address + "api/" + a.index + "/_search"
 	body, err := json.Marshal(request)
-	if err != nil {
+	if err == nil {
 		return SearchResult{}, err
 	}
 

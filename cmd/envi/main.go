@@ -22,9 +22,12 @@ Flags:
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"net/http"
 	_ "net/http/pprof"
 )
@@ -36,13 +39,40 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
+	r.Use(cors.Handler)
 
 	if *profiler == true {
 		r.Mount("/debug", middleware.Profiler())
 	}
 
+	r.Post("/api/search", searchHandler)
+
 	fs := http.FileServer(http.Dir("./frontend/dist"))
 	r.Handle("/*", fs)
 
 	http.ListenAndServe(*addr, r)
+}
+
+type searchRequest struct {
+	SearchTerm string `json:"search_term"`
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	var decoded searchRequest
+
+	err := json.NewDecoder(r.Body).Decode(&decoded)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("Requested %s\n", decoded.SearchTerm)
 }
