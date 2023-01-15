@@ -1,15 +1,35 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>Test</h1>
+  <form v-on:submit.prevent="search">
+    <input v-model="searchTerm" type="text" id="search-input" placeholder="Term to search for">
+    <button>Search</button>
+  </form>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios';
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+
+  data() { return {
+    searchTerm: '',
+    searchResults: '',
+  }},
+
+  methods: {
+    search() {
+      console.log(`Searching ${this.searchTerm}`)
+
+      axios.post("http://localhost:8080/api/search", {
+        search_term: this.searchTerm
+      }).then((response) => {
+        this.searchResults = response.data.results
+        console.log(this.searchResults)
+      }).catch((error) => {
+        console.error(`API error: ${error}`)
+      })
+    }
   }
 }
 </script>
