@@ -41,11 +41,8 @@ func main() {
 		r.Mount("/debug", middleware.Profiler())
 	}
 
-	r.Get("/", index)
+	fs := http.FileServer(http.Dir("./frontend/dist"))
+	r.Handle("/*", fs)
 
 	http.ListenAndServe(*addr, r)
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World!"))
 }
