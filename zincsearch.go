@@ -34,7 +34,7 @@ func (a *Authentication) IndexDB(path string) {
 	}
 }
 
-func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from uint, max_results uint, sources []string) error {
+func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from uint, max_results uint, sources []string) (*SearchResult, error) {
 	request := query{
 		searchType,
 		query_,
@@ -46,10 +46,10 @@ func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from 
 	url := a.address + "api/" + a.index + "/_search"
 	body, err := json.Marshal(request)
 	if err == nil {
-		return err
+		return nil, err
 	}
 
 	_, err = a.sendRequest(url, body)
 
-	return err
+	return nil, err
 }
