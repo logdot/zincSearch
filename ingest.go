@@ -17,7 +17,8 @@ func (a *Authentication) IngestSingle(mail zincindex.Mail) error {
 	}
 
 	requestAddr := a.address + "api/" + a.index + "/_doc"
-	return a.sendRequest(requestAddr, data)
+	_, err = a.sendRequest(requestAddr, data)
+	return err
 }
 
 func (a *Authentication) IngestBulk(mails []zincindex.Mail, chunking int) error {
@@ -58,7 +59,7 @@ func (a *Authentication) IngestBulk(mails []zincindex.Mail, chunking int) error 
 
 		if i%chunking == 0 {
 			requestAddr := a.address + "api/_bulk"
-			err = a.sendRequest(requestAddr, requestBody)
+			_, err = a.sendRequest(requestAddr, requestBody)
 			if err != nil {
 				return err
 			}
@@ -67,14 +68,15 @@ func (a *Authentication) IngestBulk(mails []zincindex.Mail, chunking int) error 
 	}
 
 	requestAddr := a.address + "api/_bulk"
-	return a.sendRequest(requestAddr, requestBody)
+	_, err = a.sendRequest(requestAddr, requestBody)
+	return err
 }
 
-func (a *Authentication) sendRequest(url string, body []byte) error {
+func (a *Authentication) sendRequest(url string, body []byte) ([]byte, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		log.Println(err)
-		return err
+		return []byte(""), err
 	}
 
 	req.SetBasicAuth(a.username, a.password)
@@ -83,7 +85,7 @@ func (a *Authentication) sendRequest(url string, body []byte) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println(err)
-		return err
+		return []byte(""), err
 	}
 
 	defer resp.Body.Close()
@@ -92,9 +94,9 @@ func (a *Authentication) sendRequest(url string, body []byte) error {
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
-		return err
+		return []byte(""), err
 	}
 
 	log.Println(string(body))
-	return nil
+	return body, nil
 }

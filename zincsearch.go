@@ -49,7 +49,7 @@ func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from 
 		return err
 	}
 
-	err = a.sendRequest(url, body)
+	_, err = a.sendRequest(url, body)
 
 	return err
 }
