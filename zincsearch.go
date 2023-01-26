@@ -51,7 +51,7 @@ func (a *Authentication) IndexDB(path string) {
 // sources is a list of "columns".
 // If left blank it defaults to all columns.
 // The ZincSearch api documentation does not specify whether this is only for return purposes, or if it also affects the searching.
-func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from uint, max_results uint, sources []string) (*SearchResult, error) {
+func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from uint, max_results uint, sources []string) (SearchResult, error) {
 	request := query{
 		searchType,
 		query_,
@@ -63,10 +63,13 @@ func (a *Authentication) Search(searchType SearchType, query_ SearchQuery, from 
 	url := a.address + "api/" + a.index + "/_search"
 	body, err := json.Marshal(request)
 	if err == nil {
-		return nil, err
+		return SearchResult{}, err
 	}
 
-	_, err = a.sendRequest(url, body)
+	response, err := a.sendRequest(url, body)
 
-	return nil, err
+	var searchResult SearchResult
+	err = json.Unmarshal(response, &searchResult)
+
+	return searchResult, err
 }
