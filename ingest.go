@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// ingestSingle takes a mail and sends it to be ingested
+// IngestSingle takes a mail and sends it to be ingested
 func (a *Authentication) IngestSingle(mail zincindex.Mail) error {
 	data, err := json.Marshal(mail)
 	if err != nil {
@@ -21,6 +21,9 @@ func (a *Authentication) IngestSingle(mail zincindex.Mail) error {
 	return err
 }
 
+// IngestBulk takes a list of mails and sends them to be ingested on bulk
+//
+// chunking is how many mails will be sent, on maximum, by a single ingest request
 func (a *Authentication) IngestBulk(mails []zincindex.Mail, chunking int) error {
 	index := struct {
 		InnerIndex struct {

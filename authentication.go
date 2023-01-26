@@ -8,7 +8,7 @@ type Authentication struct {
 	password string
 }
 
-// Authenticate creates an authentication object from an address, username and password.
+// Authenticate creates an authentication object from an address, index, username and password.
 func Authenticate(address string, index string, username string, password string) *Authentication {
 	authentication := &Authentication{
 		address:  address,

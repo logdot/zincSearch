@@ -2,6 +2,7 @@ package zincSearch
 
 import "time"
 
+// query is an internal struct for creating the body of the search request.
 type query struct {
 	SearchType SearchType  `json:"search_type"`
 	Query      SearchQuery `json:"query"`
@@ -10,8 +11,9 @@ type query struct {
 	Source     []string    `json:"_source"`
 }
 
+// SearchQuery represents a search request for ZincSearch
 type SearchQuery struct {
-	Term      string    `json:"term"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
+	Term      string    `json:"term"`       // the term to search for
+	StartTime time.Time `json:"start_time"` // the start time for applicable documents
+	EndTime   time.Time `json:"end_time"`   // the end time for applicable documents
 }
