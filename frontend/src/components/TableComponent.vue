@@ -1,13 +1,13 @@
 <template>
-  <table id="tableComponent">
+  <table id="tableComponent" class="table-fixed bg-white shadow-lg">
     <thead>
-      <th v-for="field in fields" :key="field" @click="sortTable(field)">
+      <th v-for="field in fields" :key="field" @click="sortTable(field)" class="bg-blue-200 border text-left">
         {{field}} <i class="sort-icon" aria-label="Sort Icon"></i>
       </th>
     </thead>
     <tbody>
-      <tr v-for="item in data" :key="item" @click="$emit('row-clicked', item[returnField])">
-        <td v-for="field in fields" :key="field">{{item[field]}}</td>
+      <tr v-for="item in data" :key="item" @click="$emit('row-clicked', item[returnField])" class="hover:bg-gray-200">
+        <td v-for="field in fields" :key="field" class="border">{{item[field]}}</td>
       </tr>
     </tbody>
   </table>
