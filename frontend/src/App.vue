@@ -5,7 +5,11 @@
     <button>Search</button>
   </form>
 
-  <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked"/>
+  <div class="w-full grid grid-cols-2">
+    <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full"/>
+
+    <textarea id="body-display" v-model="bodyDisplay" class="w-full"></textarea>
+  </div>
 </template>
 
 <script>
@@ -20,6 +24,7 @@ export default {
     searchTerm: '',
     searchResults: {},
     fields: ["subject", "from", "to"],
+    bodyDisplay: '',
   }},
 
   methods: {
@@ -38,6 +43,8 @@ export default {
 
     rowClicked(e) {
       console.log(`Row was clicked. Returned ${e}`)
+
+      this.bodyDisplay = e
     }
   }
 }
