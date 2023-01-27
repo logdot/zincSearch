@@ -10,11 +10,13 @@
     </div>
   </nav>
 
-  <div class="w-full grid grid-cols-2">
-    <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full"/>
+  <main class="w-full grid grid-cols-2 gap-6 px-3">
+    <div class="max-h-[850px] overflow-y-auto overflow-x-hidden border-y">
+      <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full h-full"/>
+    </div>
 
-    <textarea id="body-display" v-model="bodyDisplay" class="w-full"></textarea>
-  </div>
+    <textarea id="body-display" v-model="bodyDisplay" class="max-h-screen w-full overflow-auto border"></textarea>
+  </main>
 </template>
 
 <script>
