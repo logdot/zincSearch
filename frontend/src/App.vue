@@ -4,17 +4,22 @@
     <input v-model="searchTerm" type="text" id="search-input" placeholder="Term to search for">
     <button>Search</button>
   </form>
+
+  <TableComponent :fields="fields" :data="searchResults" returnField="to" @row-clicked="rowClicked"/>
 </template>
 
 <script>
 import axios from 'axios';
+import TableComponent from "@/components/TableComponent.vue";
 
 export default {
   name: 'App',
+  components: {TableComponent},
 
   data() { return {
     searchTerm: '',
-    searchResults: '',
+    searchResults: {},
+    fields: ["subject", "from", "to"],
   }},
 
   methods: {
@@ -24,11 +29,15 @@ export default {
       axios.post("http://localhost:8080/api/search", {
         search_term: this.searchTerm
       }).then((response) => {
-        this.searchResults = response.data
-        console.log(response.data)
+        this.searchResults = response.data.hits.hits.map(x => x._source)
+        console.log(this.searchResults)
       }).catch((error) => {
         console.error(`API error: ${error}`)
       })
+    },
+
+    rowClicked(e) {
+      console.log(`Row was clicked. Returned ${e}`)
     }
   }
 }
