@@ -24,8 +24,8 @@ export default {
       axios.post("http://localhost:8080/api/search", {
         search_term: this.searchTerm
       }).then((response) => {
-        this.searchResults = response.data.results
-        console.log(this.searchResults)
+        this.searchResults = response.data
+        console.log(response.data)
       }).catch((error) => {
         console.error(`API error: ${error}`)
       })
