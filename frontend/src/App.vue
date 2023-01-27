@@ -1,9 +1,14 @@
 <template>
-  <h1>Test</h1>
-  <form v-on:submit.prevent="search">
-    <input v-model="searchTerm" type="text" id="search-input" placeholder="Term to search for">
-    <button>Search</button>
-  </form>
+  <nav class="flex items-center justify-between flex-wrap bg-teal-500 p-6 mb-3">
+    <div class="flex items-center flex-shrink-0 text-white mr-6">
+      <span class="font-semibold text-xl tracking-tight">ENron VIsualizer</span>
+    </div>
+    <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+      <form v-on:submit.prevent="search" class="w-full">
+        <input v-model="searchTerm" type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Search">
+      </form>
+    </div>
+  </nav>
 
   <div class="w-full grid grid-cols-2">
     <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full"/>
@@ -57,6 +62,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
