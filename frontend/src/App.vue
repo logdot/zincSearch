@@ -1,22 +1,24 @@
 <template>
-  <nav class="flex items-center justify-between flex-wrap bg-teal-500 p-6 mb-3">
-    <div class="flex items-center flex-shrink-0 text-white mr-6">
-      <span class="font-semibold text-xl tracking-tight">ENron VIsualizer</span>
-    </div>
-    <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-      <form v-on:submit.prevent="search" class="w-full">
-        <input v-model="searchTerm" type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Search">
-      </form>
-    </div>
-  </nav>
+  <div class="flex flex-col max-h-screen">
+    <nav class="flex items-center justify-between flex-wrap bg-teal-500 p-6 mb-3">
+      <div class="flex items-center flex-shrink-0 text-white mr-6">
+        <span class="font-semibold text-xl tracking-tight">ENron VIsualizer</span>
+      </div>
+      <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+        <form v-on:submit.prevent="search" class="w-full">
+          <input v-model="searchTerm" type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Search">
+        </form>
+      </div>
+    </nav>
 
-  <main class="w-full grid grid-cols-2 gap-6 px-3">
-    <div class="max-h-[850px] overflow-y-auto overflow-x-hidden border-y">
-      <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full h-full"/>
-    </div>
+    <main class="w-full grid grid-cols-2 gap-6 px-3 flex-1 min-h-0 mb-3">
+      <div class="overflow-y-auto overflow-x-hidden border-y">
+        <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full h-full"/>
+      </div>
 
-    <textarea id="body-display" v-model="bodyDisplay" class="max-h-screen w-full overflow-auto border"></textarea>
-  </main>
+      <textarea id="body-display" v-model="bodyDisplay" class="max-h-screen w-full overflow-auto border"></textarea>
+    </main>
+  </div>
 </template>
 
 <script>
