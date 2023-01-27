@@ -47,6 +47,7 @@ import (
 	"github.com/logdot/zincSearch"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 )
 
 var zincSearchAuthentication *zincSearch.Authentication
@@ -100,4 +101,21 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Requested %s\n", decoded.SearchTerm)
+
+	searchQuery := zincSearch.SearchQuery{
+		Term:      decoded.SearchTerm,
+		StartTime: time.Unix(0, 0),
+		EndTime:   time.Now(),
+	}
+	result, err := zincSearchAuthentication.Search(zincSearch.Match, searchQuery, 0, 9999, []string{})
+
+	response, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	_, err = w.Write(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
