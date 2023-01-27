@@ -83,5 +83,7 @@ func ParseLine(mail *Mail, line string) {
 		mail.XOrigin = after
 	case "X-FileName":
 		mail.XFilename = after
+	default:
+		mail.Body += "\n" + line
 	}
 }
