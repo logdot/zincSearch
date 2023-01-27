@@ -5,7 +5,7 @@
     <button>Search</button>
   </form>
 
-  <TableComponent :fields="fields" :data="searchResults" returnField="to" @row-clicked="rowClicked"/>
+  <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked"/>
 </template>
 
 <script>
