@@ -100,6 +100,5 @@ func (a *Authentication) sendRequest(url string, body []byte) ([]byte, error) {
 		return []byte(""), err
 	}
 
-	log.Println(string(body))
 	return body, nil
 }
