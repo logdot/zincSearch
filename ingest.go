@@ -26,7 +26,7 @@ func (a *Authentication) IngestSingle(mail zincindex.Mail) error {
 // # The mails channel is expected to be closed by the caller
 //
 // chunking is how many mails will be sent, on maximum, by a single ingest request
-func (a *Authentication) IngestBulk(mails chan zincindex.Mail, chunking int) error {
+func (a *Authentication) IngestBulk(mails chan zincindex.Mail, chunking uint) error {
 	index := struct {
 		InnerIndex struct {
 			Index string `json:"_index"`
@@ -46,7 +46,7 @@ func (a *Authentication) IngestBulk(mails chan zincindex.Mail, chunking int) err
 	// ZincSearch expects a newline delimited json file
 	indexData = append(indexData, '\n')
 
-	i := 0
+	var i uint = 0
 	requestBody := []byte("")
 	for mail := range mails {
 		// For some reason if we want to index data we need to specify the index for every single item, instead of only
