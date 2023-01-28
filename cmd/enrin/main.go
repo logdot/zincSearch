@@ -28,6 +28,17 @@ Flags:
 		The username for the ZincSearch server.
 		By default, it's "admin".
 
+	-chunking (optional)
+		How many files to send to ZincSearch at once.
+		Be careful as the larger this number the higher the memory usage.
+		Really high numbers might also overwhelm ZincSearch.
+		By default, it's 1000.
+
+	-concurrency (optional)
+		How many files to index at once.
+		Be careful as the larger this number the higher the memory usage.
+		By default, it's 500.
+
 	-help
 		Brings up a simple explanation of all the program flags.
 
@@ -51,6 +62,8 @@ func main() {
 	index := flag.String("index", "", "The ZincSearch index to put the enron emails in")
 	address := flag.String("address", "http://127.0.0.1:4080/", "The root address of the ZincSearch server")
 	profilerAddr := flag.String("profiler", "", "The address to run the profiling server on. Leave blank to disable")
+	concurrency := flag.Uint("concurrency", 500, "How many files to index at once. Beware of memory usage")
+	chunking := flag.Uint("chunking", 1000, "How many files to send to ZincSearch at once. Beware of memory and overloading ZincSearch")
 	flag.Parse()
 	dbPath := flag.Arg(0)
 
@@ -73,5 +86,5 @@ func main() {
 		go http.ListenAndServe(*profilerAddr, nil)
 	}
 
-	zincSearch.Authenticate(*address, *index, *username, *password).IndexDB(dbPath)
+	zincSearch.Authenticate(*address, *index, *username, *password).IndexDB(dbPath, *concurrency, *chunking)
 }
