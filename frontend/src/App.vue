@@ -11,7 +11,7 @@
       </div>
     </nav>
 
-    <main class="w-full grid grid-cols-2 gap-6 px-3 flex-1 min-h-0 mb-3">
+    <main class="w-full grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 gap-6 px-3 flex-1 min-h-0 mb-3">
       <div class="overflow-y-auto overflow-x-hidden border-y">
         <TableComponent :fields="fields" :data="searchResults" returnField="body" @row-clicked="rowClicked" class="table-fixed w-full h-full"/>
       </div>
