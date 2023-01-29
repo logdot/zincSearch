@@ -16,8 +16,8 @@ And for the backend:
 ## Enrin
 Enrin (ENron INdexer) is a utility program to populate the ZincSearch backend with data from the Enron Email Database.
 It recursively traverses the enron database and parses each of the mail files.
-At this moment it is singlethreaded and it takes quite a considerable amount of time to parse the whole database (20+ minutes).
-Although it could be considerably sped up using multithreading.
+Originally Enrin was singlethreaded, taking up to 30+ minutes to index the entirety of the enron database.
+Now it is multithreaded and can index the whole database in around 5 minutes, but with a hefty memory requirement.
 
 
 ## Envi
@@ -49,10 +49,16 @@ While at the current moment the project is serviceable, it could still do with s
   This is because if person `A` sends an email to person `B` each of them will have one copy of the email in the enron database.
   Currently Enrin does not account for this and will bloat the database with duplicates.
   
-- [ ] Multithreaded Indexing:
+- [x] Multithreaded Indexing:
   The indexing of the enron database is currently single threaded making it take a long time to process the 600'000 emails in the enron database.
   Due to Go's strengths it should be possible to easily multithread the indexing and make the process much faster.
   
 - [ ] Better Parsing:
   The parsing that is currently implemented is very fast, but frankly doesn't work the best.
   The most glaring issue is that currently the body of emails have erronious newlines at the beginning.
+
+## Optimizations
+The indexing of a single file is relatively fast, but a lot of time (80%+) is spent waiting to be given the file handle.
+Due to this there isn't much that can be done to speed up the process, apart from multithreading the program.
+With the indexing becoming multithreaded (one goroutine per file) and with a cap of 500 goroutines by default the indexing time is greatly shortened.
+The indexing time goes from 30+ minutes (~333 files a second) to 5±1 minutes (~2000 files a second).
