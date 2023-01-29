@@ -5,11 +5,17 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 // IndexFolder takes a path to the enron database and indexes all of its directories and files recursively.
-func IndexFolder(path string) []Mail {
-	var mails []Mail
+// The returned channel is closed once all files are indexed.
+//
+// concurrency is the amount of files to index concurrently.
+func IndexFolder(path string, concurrency uint) chan Mail {
+	var wg sync.WaitGroup
+	retChan := make(chan Mail)
+	waitChan := make(chan any, concurrency)
 
 	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -21,21 +27,31 @@ func IndexFolder(path string) []Mail {
 			return nil
 		}
 
-		mail, err := IndexFile(path)
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func() {
+			waitChan <- struct{}{}
+			mail, err := IndexFile(path)
 
-		mails = append(mails, mail)
+			if err == nil {
+				retChan <- mail
+			}
+			<-waitChan
+			wg.Done()
+		}()
 
 		return nil
 	})
+
+	go func() {
+		wg.Wait()
+		close(retChan)
+	}()
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	return mails
+	return retChan
 }
 
 // IndexFile indexes a single file
