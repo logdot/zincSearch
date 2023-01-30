@@ -14,15 +14,16 @@ func ParseMailFromReader(reader io.Reader) (Mail, error) {
 	endHeader := false
 
 	var lineNum uint = 0
+	var line string
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
-		line := scanner.Text()
+		lineNum += 1
+
+		line = scanner.Text()
 		if line == "" && !endHeader {
 			endHeader = true
 			continue
 		}
-
-		lineNum += 1
 
 		var err error = nil
 		if !endHeader {
@@ -37,6 +38,10 @@ func ParseMailFromReader(reader io.Reader) (Mail, error) {
 				Reason:     err.Error(),
 			}
 		}
+	}
+
+	if line != "" {
+		mail.Body = strings.TrimSuffix(mail.Body, "\n")
 	}
 
 	return mail, nil
