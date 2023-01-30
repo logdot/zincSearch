@@ -71,7 +71,7 @@ func IndexFile(path string) (Mail, error) {
 		}
 	}(file)
 
-	mail = ParseMailFromFile(file)
+	mail = ParseMailFromReader(file)
 
 	return mail, nil
 }
