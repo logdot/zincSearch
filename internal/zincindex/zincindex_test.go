@@ -165,3 +165,17 @@ func TestThrowErrorWhenGivenFaultyHeader(t *testing.T) {
 		t.Errorf("Parse did not fail on faulty header")
 	}
 }
+
+func TestEmptyFileShouldReturnEmptyMail(t *testing.T) {
+	input := strings.NewReader("")
+
+	got, err := ParseMailFromReader(input)
+
+	if err != nil {
+		t.Errorf("Got error from parse %s", err.Error())
+	}
+
+	want := Mail{}
+
+	diffMails(want, got, t)
+}
