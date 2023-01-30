@@ -34,6 +34,8 @@ func IndexFolder(path string, concurrency uint) chan Mail {
 
 			if err == nil {
 				retChan <- mail
+			} else {
+				log.Println(err)
 			}
 			<-waitChan
 			wg.Done()
@@ -71,7 +73,5 @@ func IndexFile(path string) (Mail, error) {
 		}
 	}(file)
 
-	mail = ParseMailFromFile(file)
-
-	return mail, nil
+	return ParseMailFromReader(file)
 }
