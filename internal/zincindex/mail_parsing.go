@@ -8,11 +8,12 @@ import (
 )
 
 // ParseMailFromReader takes a reader and parses it into the returned mail object.
-func ParseMailFromReader(reader io.Reader) Mail {
+func ParseMailFromReader(reader io.Reader) (Mail, error) {
 	mail := Mail{}
 
 	endHeader := false
 
+	var lineNum uint = 0
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -21,14 +22,24 @@ func ParseMailFromReader(reader io.Reader) Mail {
 			continue
 		}
 
+		lineNum += 1
+
+		var err error = nil
 		if !endHeader {
-			ParseHeaderLine(&mail, scanner.Text())
+			err = ParseHeaderLine(&mail, scanner.Text())
 		} else {
-			ParseBodyLine(&mail, scanner.Text())
+			err = ParseBodyLine(&mail, scanner.Text())
+		}
+		if err != nil {
+			return Mail{}, ParseError{
+				LineNumber: lineNum,
+				Line:       line,
+				Reason:     err.Error(),
+			}
 		}
 	}
 
-	return mail
+	return mail, nil
 }
 
 // ParseHeaderLine takes a mail and line and parses the header at the given mail into the mail.
