@@ -53,7 +53,7 @@ While at the current moment the project is serviceable, it could still do with s
   The indexing of the enron database is currently single threaded making it take a long time to process the 600'000 emails in the enron database.
   Due to Go's strengths it should be possible to easily multithread the indexing and make the process much faster.
   
-- [ ] Better Parsing:
+- [x] Better Parsing:
   The parsing that is currently implemented is very fast, but frankly doesn't work the best.
   The most glaring issue is that currently the body of emails have erronious newlines at the beginning.
 
