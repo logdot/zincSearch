@@ -90,6 +90,10 @@ func ParseHeaderLine(mail *Mail, line string) error {
 		mail.XOrigin = after
 	case "X-FileName":
 		mail.XFilename = after
+	case "Cc":
+		mail.Cc = after
+	case "Bcc":
+		mail.Bcc = after
 	default:
 		return errors.New("Unrecognized header " + before)
 	}
