@@ -228,3 +228,35 @@ func TestHandleLargeMultilineHeader(t *testing.T) {
 
 	diffMails(want, got, t)
 }
+
+func TestHandleMultilineHeaderWithSingleSpace(t *testing.T) {
+	input := strings.NewReader("To: Example@example.com, \n Griveous@example.com, Harry@example.com")
+
+	got, err := ParseMailFromReader(input)
+
+	if err != nil {
+		t.Errorf("Got error from parse %s", err.Error())
+	}
+
+	want := Mail{
+		To: "Example@example.com, Griveous@example.com, Harry@example.com",
+	}
+
+	diffMails(want, got, t)
+}
+
+func TestHandleMultilineHeaderWithMultiSpace(t *testing.T) {
+	input := strings.NewReader("To: Example@example.com, \n   Griveous@example.com, Harry@example.com")
+
+	got, err := ParseMailFromReader(input)
+
+	if err != nil {
+		t.Errorf("Got error from parse %s", err.Error())
+	}
+
+	want := Mail{
+		To: "Example@example.com, Griveous@example.com, Harry@example.com",
+	}
+
+	diffMails(want, got, t)
+}
