@@ -196,3 +196,19 @@ func TestRecognizeCcAndBccHeader(t *testing.T) {
 
 	diffMails(want, got, t)
 }
+
+func TestHandleMultilineHeader(t *testing.T) {
+	input := strings.NewReader("To: Example@example.com, \n\tGriveous@example.com, Harry@example.com")
+
+	got, err := ParseMailFromReader(input)
+
+	if err != nil {
+		t.Errorf("Got error from parse %s", err.Error())
+	}
+
+	want := Mail{
+		To: "Example@example.com, Griveous@example.com, Harry@example.com",
+	}
+
+	diffMails(want, got, t)
+}
