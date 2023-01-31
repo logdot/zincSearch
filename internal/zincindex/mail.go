@@ -16,5 +16,7 @@ type Mail struct {
 	XFolder          string `json:"x-folder"`
 	XOrigin          string `json:"x-origin"`
 	XFilename        string `json:"x-filename"`
+	Cc               string `json:"cc"`
+	Bcc              string `json:"bcc"`
 	Body             string `json:"body"`
 }

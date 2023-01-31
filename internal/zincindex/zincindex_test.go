@@ -179,3 +179,20 @@ func TestEmptyFileShouldReturnEmptyMail(t *testing.T) {
 
 	diffMails(want, got, t)
 }
+
+func TestRecognizeCcAndBccHeader(t *testing.T) {
+	input := strings.NewReader("Cc: This is a CC header\nBcc: This is a BCC header")
+
+	got, err := ParseMailFromReader(input)
+
+	if err != nil {
+		t.Errorf("Got error from parse %s", err.Error())
+	}
+
+	want := Mail{
+		Cc:  "This is a CC header",
+		Bcc: "This is a BCC header",
+	}
+
+	diffMails(want, got, t)
+}
