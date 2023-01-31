@@ -15,6 +15,7 @@ func ParseMailFromReader(reader io.Reader) (Mail, error) {
 
 	var lineNum uint = 0
 	var line string
+	previousLine := ""
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		lineNum += 1
@@ -27,10 +28,13 @@ func ParseMailFromReader(reader io.Reader) (Mail, error) {
 
 		var err error = nil
 		if !endHeader {
-			err = ParseHeaderLine(&mail, scanner.Text())
+			err = ParseHeaderLine(&mail, scanner.Text(), previousLine)
 		} else {
 			err = ParseBodyLine(&mail, scanner.Text())
 		}
+
+		previousLine = line
+
 		if err != nil {
 			return Mail{}, ParseError{
 				LineNumber: lineNum,
@@ -55,7 +59,7 @@ func ParseMailFromReader(reader io.Reader) (Mail, error) {
 // All headers are trimmed of any spaces before being parsed.
 //
 // ParseHeaderLine will return an error if it's given an unrecognized header.
-func ParseHeaderLine(mail *Mail, line string) error {
+func ParseHeaderLine(mail *Mail, line string, previousLine string) error {
 	before, after, _ := strings.Cut(strings.Trim(line, " "), ":")
 	after = strings.Trim(after, " ")
 
@@ -95,6 +99,12 @@ func ParseHeaderLine(mail *Mail, line string) error {
 	case "Bcc":
 		mail.Bcc = after
 	default:
+		if before[0:1] == "\t" && previousLine != "" {
+			before = strings.TrimPrefix(before, "\t")
+			previousLine += before
+			return ParseHeaderLine(mail, previousLine, "")
+		}
+
 		return errors.New("Unrecognized header " + before)
 	}
 
