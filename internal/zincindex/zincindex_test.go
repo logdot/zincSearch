@@ -214,7 +214,8 @@ func TestHandleMultilineHeader(t *testing.T) {
 }
 
 func TestHandleLargeMultilineHeader(t *testing.T) {
-	input := strings.NewReader("To: Example@example.com, \n\tGriveous@example.com, \n\tHarry@example.com")
+	input := strings.NewReader("From: Maverick@example.com\n" +
+		"To: Example@example.com, \n\tGriveous@example.com, \n\tHarry@example.com")
 
 	got, err := ParseMailFromReader(input)
 
@@ -223,7 +224,8 @@ func TestHandleLargeMultilineHeader(t *testing.T) {
 	}
 
 	want := Mail{
-		To: "Example@example.com, Griveous@example.com, Harry@example.com",
+		From: "Maverick@example.com",
+		To:   "Example@example.com, Griveous@example.com, Harry@example.com",
 	}
 
 	diffMails(want, got, t)

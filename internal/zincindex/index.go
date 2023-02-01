@@ -35,7 +35,7 @@ func IndexFolder(path string, concurrency uint) chan Mail {
 			if err == nil {
 				retChan <- mail
 			} else {
-				log.Println(err)
+				log.Println(path + " " + err.Error())
 			}
 			<-waitChan
 			wg.Done()
