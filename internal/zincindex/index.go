@@ -17,41 +17,47 @@ func IndexFolder(path string, concurrency uint) chan Mail {
 	retChan := make(chan Mail)
 	waitChan := make(chan any, concurrency)
 
-	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
+	wg.Add(1)
+	go func() {
+		err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+
+			if info.IsDir() {
+				return nil
+			}
+
+			wg.Add(1)
+			waitChan <- struct{}{}
+			go func() {
+				mail, err := IndexFile(path)
+
+				if err == nil {
+					retChan <- mail
+				} else {
+					log.Println(path + " " + err.Error())
+				}
+				<-waitChan
+				wg.Done()
+			}()
+
+			return nil
+		})
+
 		if err != nil {
 			log.Println(err)
-			return err
 		}
 
-		if info.IsDir() {
-			return nil
-		}
-
-		wg.Add(1)
-		go func() {
-			waitChan <- struct{}{}
-			mail, err := IndexFile(path)
-
-			if err == nil {
-				retChan <- mail
-			} else {
-				log.Println(path + " " + err.Error())
-			}
-			<-waitChan
-			wg.Done()
-		}()
-
-		return nil
-	})
+		wg.Done()
+	}()
 
 	go func() {
 		wg.Wait()
 		close(retChan)
+		close(waitChan)
 	}()
-
-	if err != nil {
-		log.Println(err)
-	}
 
 	return retChan
 }
