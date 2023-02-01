@@ -99,8 +99,9 @@ func ParseHeaderLine(mail *Mail, line string, previousLine string) error {
 	case "Bcc":
 		mail.Bcc = after
 	default:
-		if before[0:1] == "\t" && previousLine != "" {
+		if (before[0:1] == "\t" || line[0:1] == " ") && previousLine != "" {
 			before = strings.TrimPrefix(before, "\t")
+			before = strings.TrimPrefix(before, " ")
 			previousLine += before
 			return ParseHeaderLine(mail, previousLine, "")
 		}
